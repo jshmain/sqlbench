@@ -48,7 +48,7 @@ def suiterun (tname,hosts,p,suits,run,r):
                             duration  = time.time() - now
                             # Append the result to file
                             f = open (r,'a')
-                            resultline = tname+","+i+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
+                            resultline = "impala,"+tname+","+i+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
                             f.write(resultline)
                             f.close()
 
