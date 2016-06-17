@@ -7,6 +7,7 @@ import ConfigParser
 from threading import Thread
 import time
 import os
+from random import randint
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -16,6 +17,10 @@ LOG = logging.getLogger(__name__)
 def suiterun (tname,h,p,suits,run,r):
     # Open Impala Connection
     logging.info ("Running %s", tname)
+
+    # chose impala daemon randomly from the list
+    subscript = randint(0,len(h)-1)
+    h = h[subscript]
     try:
         conn = connect(host=h, port=p)
         cursor = conn.cursor()
@@ -50,7 +55,7 @@ if __name__ == "__main__":
 
     Config = ConfigParser.ConfigParser()
     Config.read(sys.argv[1])
-    host =  Config.get("connectioninfo","host")
+    host =  Config.get("connectioninfo","host").split(",")
     port = Config.get("connectioninfo","port")
     suitList = Config.get("testinfo","suits").split(",")
     iterations = Config.getint("testinfo","iterations")
