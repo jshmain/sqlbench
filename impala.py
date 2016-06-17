@@ -14,16 +14,19 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 LOG = logging.getLogger(__name__)
 
-def suiterun (tname,h,p,suits,run,r):
+def suiterun (tname,hosts,p,suits,run,r):
     # Open Impala Connection
     logging.info ("Running %s", tname)
 
     # chose impala daemon randomly from the list
-    subscript = randint(0,len(h)-1)
-    h = h[subscript]
+   # subscript = randint(0,len(h)-1)
+   # h = h[subscript]
+    conns = []
     try:
-        conn = connect(host=h, port=p)
-        cursor = conn.cursor()
+        for h in hosts:
+            conn = connect (host=h,port=p)
+            conns.append(conn)
+
         while run > 0:
             run = run  -1
             for i in suits:
@@ -32,18 +35,22 @@ def suiterun (tname,h,p,suits,run,r):
                     for name in files:
                         with open(os.path.join(root, name),'r') as queryfile:
                             query = queryfile.read()
+                            #chose impala daemon randomly from the list
+                            subscript = randint(0,len(conns)-1)
+                            ############ get cursor
+                            cursor = conns[subscript].cursor()
                             now = time.time()
                             # execute query
                             cursor.execute(query)
                             results = cursor.fetchall()
-
+                            cursor.close()
+                            ############ close cursor
                             duration  = time.time() - now
                             # Append the result to file
                             f = open (r,'a')
                             resultline = tname+","+i+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
                             f.write(resultline)
                             f.close()
-        cursor.close()
 
     except Exception, e:
         logging.error ("Could not execute: " + e.__str__())
