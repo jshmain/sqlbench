@@ -5,13 +5,6 @@ from threading import Thread
 import time
 import os
 
-#os.environ['SPARK_HOME'] = "/appl/spark/spark-spark2-2.0.0_scala_2.11"
-#os.environ['PYTHONPATH']="/appl/spark/spark-spark2-2.0.0_scala_2.11/python:/appl/spark/spark-spark2-2.0.0_scala_2.11/python/lib/py4j-0.8.2.1-src.zip:$PYTHONPATH"
-os.environ['SPARK_HOME'] = "/usr/lib/spark"
-os.environ['PYTHONPATH']="/usr/lib/spark/python:/usr/lib/spark/python/lib/usr/lib/spark:$PYTHONPATH"
-
-from pyspark.sql import HiveContext
-from pyspark import SparkContext, SparkConf
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -66,6 +59,17 @@ if __name__ == "__main__":
     iterations = Config.getint("testinfo","iterations")
     results = Config.get("testinfo", "resultsfile")
     concurrency = Config.getint("testinfo","concurrency")
+
+    if spark_version == "1.6":
+        spark_home="/usr/lib/spark"
+    else:
+        spark_home = "/appl/spark/spark-spark2-2.0.0_scala_2.11"
+
+    os.environ['SPARK_HOME'] = spark_home
+    os.environ['PYTHONPATH'] = spark_home + "/python:"+ spark_home + "/python/lib/usr/lib/spark:$PYTHONPATH"
+
+    from pyspark.sql import HiveContext
+    from pyspark import SparkContext, SparkConf
 
     conf = SparkConf()
     conf.setAppName("Spark SQL Driver")
