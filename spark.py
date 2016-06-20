@@ -71,8 +71,11 @@ if __name__ == "__main__":
     from pyspark import SparkContext, SparkConf
 
     if spark_version == "2.0":
-        from pyspark.sql import SparkSession
-        sqlContext = SparkSession.builder.enableHiveSupport().getOrCreate ()
+        try:
+            from pyspark.sql import SparkSession
+            sqlContext = SparkSession.builder.master("yarn").enableHiveSupport().getOrCreate ()
+        except:
+            logging.warn ("This version of Spark is not 2.0 so not doing SparkSessions")
     else:
         conf = SparkConf()
         conf.setAppName("Spark SQL Driver")
