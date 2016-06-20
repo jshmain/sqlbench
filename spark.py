@@ -18,6 +18,37 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 LOG = logging.getLogger(__name__)
 
+def suiterun (tname,ctx,version,suits,run,r):
+    # Open Impala Connection
+    logging.info ("Running %s", tname)
+
+    # chose impala daemon randomly from the list
+   # subscript = randint(0,len(h)-1)
+   # h = h[subscript]
+    conns = []
+    try:
+        while run > 0:
+            run = run  -1
+            for i in suits:
+                topdir = "/appl/perfbench/latest/suits/" + i + "/spark"+ version
+                for root,dirs,files  in os.walk(topdir,topdown="False"):
+                    for name in files:
+                        with open(os.path.join(root, name),'r') as queryfile:
+                            query = queryfile.read()
+                            now = time.time()
+                            # execute query
+                            results = ctx.sql (query).collect ()
+                            ############ close cursor
+                            duration  = time.time() - now
+                            # Append the result to file
+                            f = open (r,'a')
+                            resultline = "spark"+version+","+tname+","+i+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
+                            f.write(resultline)
+                            f.close()
+    except Exception, e:
+        logging.error("Could not execute: " + e.__str__())
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         logging.fatal("Usage: <%s> <config file>" , sys.argv[0])
@@ -42,9 +73,23 @@ if __name__ == "__main__":
     sc = SparkContext (conf=conf)
 
     sqlContext = HiveContext(sc)
-    result = sqlContext.sql ("select * from customers").collect()
-    #sqlContext.sql ("show tables")
-    print (result)
+
+
+    threads = []
+    while concurrency > 0:
+        name = "Thread #" + concurrency.__str__()
+        try:
+            thread = Thread (target=suiterun,args = (name,sqlContext,spark_version,suitList,iterations,results))
+            threads.append(thread)
+            #thread.start_new_thread(suiterun,(name,host,port,suitList,iterations,results,))
+        except:
+            logging.fatal("Unable to start thread %s", name)
+        concurrency = concurrency-1
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+
 
 
 
