@@ -60,23 +60,25 @@ if __name__ == "__main__":
     results = Config.get("testinfo", "resultsfile")
     concurrency = Config.getint("testinfo","concurrency")
 
-    if spark_version == "1.6":
-        spark_home="/usr/lib/spark"
-    else:
-        spark_home = "/appl/spark/spark-spark2-2.0.0_scala_2.11"
 
-    os.environ['SPARK_HOME'] = spark_home
-    os.environ['PYTHONPATH'] = spark_home + "/python:"+ spark_home + "/python/lib/usr/lib/spark:$PYTHONPATH"
+    os.environ['SPARK_HOME'] = spark_location
+    os.environ['PYTHONPATH'] = spark_location + "/python:"+ spark_location + "/python/lib/usr/lib/spark:$PYTHONPATH"
+    os.environ['HADOOP_CONF_DIR'] = "/etc/hadoop/conf"
+    os.environ['YARN_CONF_DIR'] = "/etc/hadoop/conf"
+
 
     from pyspark.sql import HiveContext
     from pyspark import SparkContext, SparkConf
 
-    conf = SparkConf()
-    conf.setAppName("Spark SQL Driver")
-    conf.set("spark.executor.instances", spark_executor_num )
-    sc = SparkContext (conf=conf)
-
-    sqlContext = HiveContext(sc)
+    if spark_version == "2.0":
+        from pyspark.sql import SparkSession
+        sqlContext = SparkSession.builder.enableHiveSupport().getOrCreate ()
+    else:
+        conf = SparkConf()
+        conf.setAppName("Spark SQL Driver")
+        conf.set("spark.executor.instances", spark_executor_num )
+        sc = SparkContext (conf=conf)
+        sqlContext = HiveContext(sc)
 
 
     threads = []
