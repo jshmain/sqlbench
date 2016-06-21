@@ -23,7 +23,7 @@ def suiterun (tname,ctx,version,suits,run,r):
         while run > 0:
             run = run  -1
             for i in suits:
-                topdir = "/appl/perfbench/latest/suits/" + i + "/spark"+ version
+                topdir = "/appl/perfbench/latest/suites/" + i + "/spark"+ version
                 for root,dirs,files  in os.walk(topdir,topdown="False"):
                     for name in files:
                         with open(os.path.join(root, name),'r') as queryfile:
@@ -65,6 +65,7 @@ if __name__ == "__main__":
     os.environ['PYTHONPATH'] = spark_location + "/python:"+ spark_location + "/python/lib/usr/lib/spark:$PYTHONPATH"
     os.environ['HADOOP_CONF_DIR'] = "/etc/hadoop/conf"
     os.environ['YARN_CONF_DIR'] = "/etc/hadoop/conf"
+    sys.path.append(spark_location + "/python")
 
 
     from pyspark.sql import HiveContext

@@ -30,7 +30,7 @@ def suiterun (tname,hosts,p,suits,run,r):
         while run > 0:
             run = run  -1
             for i in suits:
-                topdir = "/appl/perfbench/latest/suits/" + i + "/impala"
+                topdir = "/appl/perfbench/latest/suites/" + i + "/impala"
                 for root,dirs,files  in os.walk(topdir,topdown="False"):
                     for name in files:
                         with open(os.path.join(root, name),'r') as queryfile:
