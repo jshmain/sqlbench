@@ -30,7 +30,8 @@ def suiterun (tname,hosts,p,suits,run,r):
         while run > 0:
             run = run  -1
             for i in suits:
-                topdir = "/appl/perfbench/latest/suites/" + i + "/impala"
+                suitparams = i.split (":")
+                topdir = "/appl/perfbench/latest/suites/" + suitparams[1] + "/impala"
                 for root,dirs,files  in os.walk(topdir,topdown="False"):
                     for name in files:
                         with open(os.path.join(root, name),'r') as queryfile:
@@ -41,6 +42,7 @@ def suiterun (tname,hosts,p,suits,run,r):
                             cursor = conns[subscript].cursor()
                             now = time.time()
                             # execute query
+                            cursor.execute("use " + suitparams[0])
                             cursor.execute(query)
                             results = cursor.fetchall()
                             cursor.close()
@@ -48,7 +50,7 @@ def suiterun (tname,hosts,p,suits,run,r):
                             duration  = time.time() - now
                             # Append the result to file
                             f = open (r,'a')
-                            resultline = "impala,"+tname+","+i+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
+                            resultline = "impala,"+tname+","+suitparams[1]+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
                             f.write(resultline)
                             f.close()
 

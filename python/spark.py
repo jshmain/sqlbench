@@ -23,19 +23,21 @@ def suiterun (tname,ctx,version,suits,run,r):
         while run > 0:
             run = run  -1
             for i in suits:
-                topdir = "/appl/perfbench/latest/suites/" + i + "/spark"+ version
+                suitparams = i.split (":")
+                topdir = "/appl/perfbench/latest/suites/" + suitparams[1] + "/spark"+ version
                 for root,dirs,files  in os.walk(topdir,topdown="False"):
                     for name in files:
                         with open(os.path.join(root, name),'r') as queryfile:
                             query = queryfile.read()
                             now = time.time()
                             # execute query
+                            ctx.sql ("use " + suitparams[0])
                             results = ctx.sql (query).collect ()
                             ############ close cursor
                             duration  = time.time() - now
                             # Append the result to file
                             f = open (r,'a')
-                            resultline = "spark"+version+","+tname+","+i+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
+                            resultline = "spark"+version+","+tname+","+suitparams[1]+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
                             f.write(resultline)
                             f.close()
     except Exception, e:
