@@ -14,7 +14,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 LOG = logging.getLogger(__name__)
 
-def suiterun (tname,hosts,p,suits,run,r):
+def suiterun (tname,hosts,p,sdir,suits,run,r):
     # Open Impala Connection
     logging.info ("Running %s", tname)
 
@@ -34,7 +34,7 @@ def suiterun (tname,hosts,p,suits,run,r):
             for i in suits:
                 # suiteparams:  database:suite_name
                 suitparams = i.split (":")
-                topdir = "/appl/perfbench/latest/suites/" + suitparams[1] + "/impala"
+                topdir = sdir+"/" + suitparams[1] + "/impala"
 
                 # For every suit there is a folder that gets processed
                 # In that folder we will find a bunch of files with queries
@@ -78,6 +78,7 @@ if __name__ == "__main__":
     iterations = Config.getint("testinfo","iterations")
     results = Config.get("testinfo", "resultsfile")
     concurrency = Config.getint("testinfo","concurrency")
+    suit_dir = Config.getint("testinfo","suit_dir")
 
     threads = []
     # Concurrency dictates # of concurrent connections to Impala
@@ -85,9 +86,8 @@ if __name__ == "__main__":
     while concurrency > 0:
         name = "Thread #" + concurrency.__str__()
         try:
-            thread = Thread (target=suiterun,args = (name,host,port,suitList,iterations,results))
+            thread = Thread (target=suiterun,args = (name,host,port,suit_dir,suitList,iterations,results))
             threads.append(thread)
-            #thread.start_new_thread(suiterun,(name,host,port,suitList,iterations,results,))
         except:
             logging.fatal("Unable to start thread %s", name)
         concurrency = concurrency-1

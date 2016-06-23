@@ -11,7 +11,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 LOG = logging.getLogger(__name__)
 
-def suiterun (tname,ctx,version,suits,run,r):
+def suiterun (tname,ctx,version,sdir,suits,run,r):
     logging.info ("Running %s", tname)
 
     try:
@@ -24,7 +24,7 @@ def suiterun (tname,ctx,version,suits,run,r):
             for i in suits:
                 # suiteparams:  database:suite_name
                 suitparams = i.split (":")
-                topdir = "/appl/perfbench/latest/suites/" + suitparams[1] + "/spark"+ version
+                topdir = sdir+"/" + suitparams[1] + "/spark"+ version
 
                 # For every suit there is a folder that gets processed
                 # In that folder we will find a bunch of files with queries
@@ -64,6 +64,7 @@ if __name__ == "__main__":
     iterations = Config.getint("testinfo","iterations")
     results = Config.get("testinfo", "resultsfile")
     concurrency = Config.getint("testinfo","concurrency")
+    suit_dir = Config.getint("testinfo","suit_dir")
 
     # Depending on Spark version chose a different version of Spark on the system
     # Location is coming from the config file
@@ -98,9 +99,8 @@ if __name__ == "__main__":
     while concurrency > 0:
         name = "Thread #" + concurrency.__str__()
         try:
-            thread = Thread (target=suiterun,args = (name,sqlContext,spark_version,suitList,iterations,results))
+            thread = Thread (target=suiterun,args = (name,sqlContext,spark_version,suit_dir,suitList,iterations,results))
             threads.append(thread)
-            #thread.start_new_thread(suiterun,(name,host,port,suitList,iterations,results,))
         except:
             logging.fatal("Unable to start thread %s", name)
         concurrency = concurrency-1
