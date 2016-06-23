@@ -81,13 +81,19 @@ if __name__ == "__main__":
     if spark_version == "2.0":
         try:
             from pyspark.sql import SparkSession
-            sqlContext = SparkSession.builder.master("yarn").appName("Spark2 SQL Driver").enableHiveSupport().getOrCreate ()
+            sqlContext = SparkSession.builder.master("yarn").appName("Spark2 SQL Driver")\
+                .config("spark.executor.instances", spark_executor_num)\
+                .config("spark.executor.memory", spark_executor_mem)\
+                .config("spark.executor.cores", spark_executor_cores)\
+                .enableHiveSupport().getOrCreate ()
         except:
             logging.warn ("This version of Spark is not 2.0 so not doing SparkSessions")
     else:
         conf = SparkConf()
         conf.setAppName("Spark1 SQL Driver")
         conf.set("spark.executor.instances", spark_executor_num )
+        conf.set("spark.executor.memory", spark_executor_mem)
+        conf.set("spark.executor.cores", spark_executor_cores)
         sc = SparkContext (conf=conf)
         sqlContext = HiveContext(sc)
 
@@ -109,6 +115,6 @@ if __name__ == "__main__":
     for t in threads:
         t.join()
 
-
+    print ("End")
 
 
