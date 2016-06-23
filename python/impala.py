@@ -35,6 +35,7 @@ def suiterun (tname,hosts,p,suits,run,r):
                 # suiteparams:  database:suite_name
                 suitparams = i.split (":")
                 topdir = "/appl/perfbench/latest/suites/" + suitparams[1] + "/impala"
+
                 # For every suit there is a folder that gets processed
                 # In that folder we will find a bunch of files with queries
                 for root,dirs,files  in os.walk(topdir,topdown="False"):

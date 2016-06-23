@@ -12,19 +12,22 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 LOG = logging.getLogger(__name__)
 
 def suiterun (tname,ctx,version,suits,run,r):
-    # Open Impala Connection
     logging.info ("Running %s", tname)
 
-    # chose impala daemon randomly from the list
-   # subscript = randint(0,len(h)-1)
-   # h = h[subscript]
-    conns = []
     try:
+        # Run dictates how many times to run all the suits
+        # runs are executed serially
         while run > 0:
             run = run  -1
+
+            # For each run we iterate through configured Suits and execute them
             for i in suits:
+                # suiteparams:  database:suite_name
                 suitparams = i.split (":")
                 topdir = "/appl/perfbench/latest/suites/" + suitparams[1] + "/spark"+ version
+
+                # For every suit there is a folder that gets processed
+                # In that folder we will find a bunch of files with queries
                 for root,dirs,files  in os.walk(topdir,topdown="False"):
                     for name in files:
                         with open(os.path.join(root, name),'r') as queryfile:
@@ -62,7 +65,8 @@ if __name__ == "__main__":
     results = Config.get("testinfo", "resultsfile")
     concurrency = Config.getint("testinfo","concurrency")
 
-
+    # Depending on Spark version chose a different version of Spark on the system
+    # Location is coming from the config file
     os.environ['SPARK_HOME'] = spark_location
     os.environ['PYTHONPATH'] = spark_location + "/python:"+ spark_location + "/python/lib/usr/lib/spark:$PYTHONPATH"
     os.environ['HADOOP_CONF_DIR'] = "/etc/hadoop/conf"
@@ -86,7 +90,10 @@ if __name__ == "__main__":
         sc = SparkContext (conf=conf)
         sqlContext = HiveContext(sc)
 
-
+    # Concurrency dictates # of concurrent connections to Spark
+    # We will spin up a different thread per connection
+    # We pass SqlContext or SparkSession depending on version to threads
+    #    Assume SqlContext / SparkSession are thread safe, which should be the case
     threads = []
     while concurrency > 0:
         name = "Thread #" + concurrency.__str__()
