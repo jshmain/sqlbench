@@ -64,7 +64,7 @@ if __name__ == "__main__":
     iterations = Config.getint("testinfo","iterations")
     results = Config.get("testinfo", "resultsfile")
     concurrency = Config.getint("testinfo","concurrency")
-    suit_dir = Config.getint("testinfo","suit_dir")
+    suit_dir = Config.get("testinfo","suit_dir")
 
     # Depending on Spark version chose a different version of Spark on the system
     # Location is coming from the config file

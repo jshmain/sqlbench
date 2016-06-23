@@ -78,7 +78,7 @@ if __name__ == "__main__":
     iterations = Config.getint("testinfo","iterations")
     results = Config.get("testinfo", "resultsfile")
     concurrency = Config.getint("testinfo","concurrency")
-    suit_dir = Config.getint("testinfo","suit_dir")
+    suit_dir = Config.get("testinfo","suit_dir")
 
     threads = []
     # Concurrency dictates # of concurrent connections to Impala
