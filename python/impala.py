@@ -63,7 +63,7 @@ def suiterun (tname,hosts,p,sdir,suits,run,r):
                             f.close()
 
     except Exception, e:
-        logging.error ("Could not execute: " + e.__str__())
+        logging.error ("Could not execute: " + name + " with exception " + e.__str__())
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
