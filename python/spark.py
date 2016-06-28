@@ -44,7 +44,7 @@ def suiterun (tname,ctx,version,sdir,suits,run,r):
                             f.write(resultline)
                             f.close()
     except Exception, e:
-        logging.error("Could not execute: " + e.__str__())
+        logging.error ("Could not execute: " + name + " with exception " + e.__str__())
 
 
 if __name__ == "__main__":
