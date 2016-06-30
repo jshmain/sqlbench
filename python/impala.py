@@ -38,9 +38,11 @@ def suiterun (tname,hosts,p,sdir,suits,run,r):
 
                 # For every suit there is a folder that gets processed
                 # In that folder we will find a bunch of files with queries
-                for root,dirs,files  in os.walk(topdir,topdown="False"):
-                    for name in files:
-                        with open(os.path.join(root, name),'r') as queryfile:
+                with open (topdir + "/query_order.txt", 'r') as orderfile:
+                    for name in orderfile:
+                        name = name.rstrip()
+
+                        with open(topdir + "/" + name,'r') as queryfile:
                             query = queryfile.read()
                             #chose impala daemon randomly from the list
                             #this is done for load balancing purpose
