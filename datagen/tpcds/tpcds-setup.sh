@@ -78,7 +78,9 @@ hive -e "create database if not exists ${TPCDS_DBNAME}"
 cd impala
 bash impala-load-dims.sh 
 bash impala-load-store_sales.sh
-bash impala-compute-stats.sh
+bash impala-compute-stats.sh &
 cd ..
-hive -f settings/analyze.sql --database ${TPCDS_DBNAME}
+hive -f settings/analyze.sql --database ${TPCDS_DBNAME} &
+
+wait
 exit 0;
