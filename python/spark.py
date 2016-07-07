@@ -60,6 +60,8 @@ if __name__ == "__main__":
     spark_executor_num =  Config.get("connectioninfo","spark_executor_num")
     spark_executor_mem =  Config.get("connectioninfo","spark_executor_mem")
     spark_executor_cores =  Config.get("connectioninfo","spark_executor_cores")
+    spark_driver_mem =  Config.get("connectioninfo","spark_driver_mem")
+    spark_auto_broadcast =  Config.get("connectioninfo","spark_auto_broadcast")
 
     suitList = Config.get("testinfo","suits").split(",")
     iterations = Config.getint("testinfo","iterations")
@@ -79,31 +81,33 @@ if __name__ == "__main__":
     from pyspark.sql import HiveContext
     from pyspark import SparkContext, SparkConf
 
-    if spark_version == "2.0":
-        try:
+    try:
+      if spark_version == "2.0":
             from pyspark.sql import SparkSession
             sqlContext = SparkSession.builder.master("yarn").appName("Spark2 SQL Driver")\
                 .config("spark.executor.instances", spark_executor_num)\
                 .config("spark.executor.memory", spark_executor_mem)\
+                .config("spark.driver.memory", spark_driver_mem)\
                 .config("spark.executor.cores", spark_executor_cores)\
+                .config("spark.sql.autoBroadcastJoinThreshold", spark_auto_broadcast)\
                 .enableHiveSupport().getOrCreate ()
-        except:
-            logging.warn ("This version of Spark is not 2.0 so not doing SparkSessions")
-    else:
+      else:
         conf = SparkConf()
         conf.setAppName("Spark1 SQL Driver")
         conf.set("spark.executor.instances", spark_executor_num )
         conf.set("spark.executor.memory", spark_executor_mem)
         conf.set("spark.executor.cores", spark_executor_cores)
+        conf.set("spark.driver.memory", "20g")
+        conf.set("spark.sql.autoBroadcastJoinThreshold", "-1")
         sc = SparkContext (conf=conf)
         sqlContext = HiveContext(sc)
 
-    # Concurrency dictates # of concurrent connections to Spark
-    # We will spin up a different thread per connection
-    # We pass SqlContext or SparkSession depending on version to threads
-    #    Assume SqlContext / SparkSession are thread safe, which should be the case
-    threads = []
-    while concurrency > 0:
+      # Concurrency dictates # of concurrent connections to Spark
+      # We will spin up a different thread per connection
+      # We pass SqlContext or SparkSession depending on version to threads
+      #    Assume SqlContext / SparkSession are thread safe, which should be the case
+      threads = []
+      while concurrency > 0:
         name = "Thread #" + concurrency.__str__()
         try:
             thread = Thread (target=suiterun,args = (name,sqlContext,spark_version,suit_dir,suitList,iterations,results))
@@ -111,9 +115,12 @@ if __name__ == "__main__":
         except:
             logging.fatal("Unable to start thread %s", name)
         concurrency = concurrency-1
-    for t in threads:
+      for t in threads:
         t.start()
-    for t in threads:
+      for t in threads:
         t.join()
+    except Exception, e:
+        logging.error ("Exception encountered: " +  str(e))
+        sys.exit (1)
 
     logging.info ("Spark " + spark_version + ".  All Done.")
