@@ -97,8 +97,8 @@ if __name__ == "__main__":
         conf.set("spark.executor.instances", spark_executor_num )
         conf.set("spark.executor.memory", spark_executor_mem)
         conf.set("spark.executor.cores", spark_executor_cores)
-        conf.set("spark.driver.memory", "20g")
-        conf.set("spark.sql.autoBroadcastJoinThreshold", "-1")
+        conf.set("spark.driver.memory", spark_driver_mem)
+        conf.set("spark.sql.autoBroadcastJoinThreshold", spark_auto_broadcast)
         sc = SparkContext (conf=conf)
         sqlContext = HiveContext(sc)
 
