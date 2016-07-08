@@ -84,5 +84,5 @@ hive -f settings/analyze.sql --database ${TPCDS_DBNAME} &
 
 wait
 export HADOOP_USER_NAME=hdfs
-for i in `hadoop fs -ls /user/hive/warehouse/tpcds_pq.db/ |awk '{print $8}'`; do hadoop fs -rm -r $i/_impala_insert_staging; done
+for i in `hadoop fs -ls /user/hive/warehouse/${TPCDS_DBNAME}.db/ |awk '{print $8}'`; do hadoop fs -rm -r $i/_impala_insert_staging; done
 exit 0;
