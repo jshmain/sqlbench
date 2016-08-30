@@ -4,7 +4,7 @@ import ConfigParser
 from threading import Thread
 import time
 import os
-
+import datetime
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -41,7 +41,7 @@ def suiterun (tname,ctx,version,sdir,suits,run,r):
                             duration  = time.time() - now
                             # Append the result to file
                             f = open (r,'a')
-                            resultline = "spark"+version+","+tname+","+suitparams[1]+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
+                            resultline = datetime.datetime.fromtimestamp(now).strftime('%Y-%m-%d %H:%M:%S')+",spark"+version+","+tname+","+suitparams[1]+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
                             f.write(resultline)
                             f.close()
     except Exception, e:
