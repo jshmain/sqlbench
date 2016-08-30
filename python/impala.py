@@ -86,7 +86,7 @@ if __name__ == "__main__":
     # Concurrency dictates # of concurrent connections to Impala
     # We will spin up a different thread per connection
     while concurrency > 0:
-        name = "Thread #" + concurrency.__str__()
+        name = "Thread_" + concurrency.__str__()
         try:
             thread = Thread (target=suiterun,args = (name,host,port,suit_dir,suitList,iterations,results))
             threads.append(thread)
