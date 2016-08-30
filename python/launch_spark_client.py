@@ -55,7 +55,8 @@ def createSparkCtx (Config,name):
         conf.set("spark.yarn.queue", name)
         conf.set("spark.sql.autoBroadcastJoinThreshold", spark_auto_broadcast)
         sc = SparkContext (conf=conf)
-    	return sc
+        sqlContext = HiveContext(sc)
+    	return sqlContext
     except Exception, e:
         logging.error ("Exception encountered: " +  str(e))
         sys.exit (1)
