@@ -8,6 +8,8 @@ from threading import Thread
 import time
 import os
 from random import randint
+import datetime
+
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -60,7 +62,7 @@ def suiterun (tname,hosts,p,sdir,suits,run,r):
                             duration  = time.time() - now
                             # Append the result to file
                             f = open (r,'a')
-                            resultline = "impala,"+tname+","+suitparams[1]+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
+                            resultline = datetime.datetime.fromtimestamp(now).strftime('%Y-%m-%d %H:%M:%S')+",impala,"+tname+","+suitparams[1]+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
                             f.write(resultline)
                             f.close()
 
