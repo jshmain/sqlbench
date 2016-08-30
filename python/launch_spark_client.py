@@ -5,6 +5,7 @@ import threading
 from threading import Thread,current_thread
 import time
 import os
+import datetime
 
 
 
@@ -92,7 +93,7 @@ def suiterun (tname,configs,version,sdir,suits,run,r):
                             duration  = time.time() - now
                             # Append the result to file
                             f = open (r,'a')
-                            resultline = "spark"+version+","+tname+","+suitparams[1]+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
+                            resultline = datetime.datetime.fromtimestamp(now).strftime('%Y-%m-%d %H:%M:%S')+",spark"+version+","+tname+","+suitparams[1]+","+name + "," +  run.__str__() + "," + duration.__str__()+"\n"
                             f.write(resultline)
                             f.close()
     except Exception, e:
