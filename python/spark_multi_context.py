@@ -20,9 +20,13 @@ if __name__ == "__main__":
 
     concurrency = Config.getint("testinfo","concurrency")
     launch_script  = os.path.dirname (sys.argv[0]) + "/launch_spark_client.py"
+    threads = []
     while concurrency > 0:
       name = "Thread_" + concurrency.__str__()
-      subprocess.Popen (["python", launch_script , name, sys.argv[1]])
+      p = subprocess.Popen (["python", launch_script , name, sys.argv[1]])
+      threads.append(p)
       concurrency = concurrency-1
-
+    for t in threads:
+        t.wait()
+        
     logging.info ("Spark All Done.")
